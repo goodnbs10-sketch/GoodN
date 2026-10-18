@@ -15,7 +15,12 @@ mlen = {m[0]: m[2] for m in measures}
 total_q = measures[-1][1] + measures[-1][2]
 
 # ---- tempo map (quarter-note BPM as function of score position)
+SCALE = float(__import__('os').environ.get('TEMPO_SCALE', '1'))
+
 def bpm_at(q):
+    return SCALE * _bpm_at(q)
+
+def _bpm_at(q):
     def m_of(q):
         i = bisect.bisect_right([m[1] for m in measures], q) - 1
         return measures[i][0]
@@ -37,7 +42,7 @@ while q < total_q + 8:
     t += STEP * 60.0 / bpm_at(q)
     q += STEP
     if abs(q - mstart[121]) < STEP / 2:
-        t += 0.6  # breath mark before Maestoso
+        t += 0.6 / SCALE  # breath mark before Maestoso
     qgrid.append(q); tgrid.append(t)
 
 def sec(q):
